@@ -15,8 +15,8 @@ navigator.geolocation.watchPosition(
 		console.log(position);
 		const data = {
 			location: {
-				latitude: position.coords.latitude,
-				longitude: position.coords.longitude
+				lat: position.coords.latitude,
+				lng: position.coords.longitude
 			},
 			errorCode: null
 		}
