@@ -2,6 +2,7 @@ port module Main exposing (main)
 
 import Browser
 import Html exposing (Html, div, text)
+import Http
 import Json.Decode as D
 
 
@@ -30,20 +31,22 @@ type alias Location =
     , longitude : Float
     }
 
-
 type alias ReceiveLocation =
     { location : Maybe Location
     , errorCode : Maybe Int
     }
-
 
 type alias Model =
     { apiKey : APIKey
     , location : Location
     , error : Maybe String
     , geolocationAPIEnable : Bool
+    , threeWordAddress : Maybe String
     }
 
+convertTo3WADecoder : D.Decoder String
+convertTo3WADecoder =
+    D.field "words" D.string
 
 locationDecoder : D.Decoder Location
 locationDecoder =
@@ -61,13 +64,14 @@ receiveLocationDecoder =
 
 init : Flag -> ( Model, Cmd Msg )
 init flag =
-    ( Model flag.apiKey { latitude = 0, longitude = 0 } Nothing flag.supportGeolocation
+    ( Model flag.apiKey { latitude = 0, longitude = 0 } Nothing flag.supportGeolocation Nothing
     , Cmd.none
     )
 
 
 type Msg
     = Refresh D.Value
+    | Get3WA (Result Http.Error String)
 
 
 
@@ -75,6 +79,19 @@ type Msg
 
 
 port receiveLocation : (D.Value -> msg) -> Sub msg
+
+
+makeGet3WAUrl : APIKey -> Location -> String
+makeGet3WAUrl apiKey location =
+    String.concat
+        [ "https://api.what3words.com/v3/convert-to-3wa?key="
+        , apiKey
+        , "&coordinates="
+        , String.fromFloat location.latitude
+        , ","
+        , String.fromFloat location.longitude
+        , "&language=ja&format=json"
+        ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -99,13 +116,56 @@ update msg model =
                                     Maybe.withDefault { latitude = 0, longitude = 0 } status.location
                             in
                             ( { model | location = newLocation }
-                            , Cmd.none
+                            , Http.request
+                                { method = "GET"
+                                , headers =
+                                    [ Http.header "Accept" "application/json"
+                                    ]
+                                , url = makeGet3WAUrl model.apiKey model.location
+                                , expect = Http.expectJson Get3WA convertTo3WADecoder
+                                , timeout = Nothing
+                                , tracker = Nothing
+                                , body = Http.emptyBody
+                                }
                             )
 
                 Err _ ->
                     ( { model | error = Just "port error" }
                     , Cmd.none
                     )
+
+        Get3WA (Ok resultJson) ->
+            ( { model | threeWordAddress = Just resultJson }
+            , Cmd.none
+            )
+
+        Get3WA (Err error) ->
+            case error of
+                Http.BadUrl url ->
+                    ( { model | error = Just (String.append "Bad URL:" url) }
+                    , Cmd.none
+                    )
+
+                Http.Timeout ->
+                    ( { model | error = Just "Timeout" }
+                    , Cmd.none
+                    )
+
+                Http.NetworkError ->
+                    ( { model | error = Just "NetworkError" }
+                    , Cmd.none
+                    )
+
+                Http.BadStatus statusCode ->
+                    ( { model | error = Just (String.append "Bad status" (String.fromInt statusCode)) }
+                    , Cmd.none
+                    )
+            
+                Http.BadBody status ->
+                    ( { model | error = Just ( String.append "Bad body: " status) }
+                    , Cmd.none
+                    )
+
 
 
 
@@ -140,6 +200,7 @@ view model =
             div []
                 [ div [] [ text ("latitude: " ++ String.fromFloat model.location.latitude) ]
                 , div [] [ text ("longitude: " ++ String.fromFloat model.location.longitude) ]
+                , div [] [ text ("3 Word Address: " ++ Maybe.withDefault "" model.threeWordAddress )]
                 , div []
                     (if model.geolocationAPIEnable then
                         [ text "Geolocation API: enabled" ]
