@@ -1,7 +1,7 @@
 port module Main exposing (main)
 
 import Browser exposing (element)
-import Html exposing (Html, div, text, nav, a, p)
+import Html exposing (Html, div, text, nav, a, p, button)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Http
@@ -89,6 +89,7 @@ type Msg
     = ExtractResponseGetThreeWordAddress (Result Http.Error Converted3WordAddress)
     | CopyToClipboardThreeWordAddress 
     | ExtractGeolocationData D.Value
+    | ShareOverWebShareAPI
 
 
 -- UPDATE
@@ -180,7 +181,17 @@ update msg model =
                 _ ->
                     ( model
                     , sendCopyToClipboardRequest ""
-                    )                
+                    )
+        ShareOverWebShareAPI ->
+            case model.threeWordAddress of
+                Received square ->
+                    ( model
+                    , sendShareOverWebShareAPIRequest square.words
+                    )
+                _ ->
+                    ( model
+                    , sendShareOverWebShareAPIRequest ""
+                    )
 
         ExtractGeolocationData data ->
             let
@@ -234,6 +245,7 @@ update msg model =
 
 port receiveLocation : (D.Value -> msg) -> Sub msg
 port sendCopyToClipboardRequest : String -> Cmd msg
+port sendShareOverWebShareAPIRequest : String -> Cmd msg
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -309,6 +321,7 @@ view model =
                     , div [] [ text ("longitude: " ++ String.fromFloat model.location.lng) ]
                     , div [ onClick CopyToClipboardThreeWordAddress ] [ text ("3 Word Address: " ++ address.words)]
                     , div [] [ text "上記 3 Word Addressをクリックするとクリップボードにコピーされます。" ]
+                    , button [ onClick ShareOverWebShareAPI ] [ text "Share" ]
                     , navbar
                     ]
             

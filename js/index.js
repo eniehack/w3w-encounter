@@ -18,6 +18,19 @@ app.ports.sendCopyToClipboardRequest.subscribe((threeWordAddress) => {
 	})
 })
 
+app.ports.sendShareOverWebShareAPIRequest.subscribe((threeWordAddress) => {
+	let shareData = {
+		title: "w3w-encounter",
+		text: `わたしはいまここにいます: ${threeWordAddress}`,
+		url: `https://w3w.co/${threeWordAddress}`
+	}
+	navigator.share(shareData).then(() => {
+		console.log("Web Share API success!")
+	}, () => {
+		console.log("Web Share API failed")
+	})
+})
+
 navigator.geolocation.watchPosition(
 	function(position) {
 		console.log(position);
