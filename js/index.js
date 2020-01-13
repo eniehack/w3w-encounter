@@ -10,6 +10,14 @@ const app = Elm.Main.init({
 	}
 });
 
+app.ports.sendCopyToClipboardRequest.subscribe((threeWordAddress) => {
+	navigator.clipboard.writeText(threeWordAddress).then(() => {
+		console.log("copyed!")
+	},() => {
+		console.log("copy failed!")
+	})
+})
+
 navigator.geolocation.watchPosition(
 	function(position) {
 		console.log(position);
