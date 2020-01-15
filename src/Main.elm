@@ -141,15 +141,15 @@ changedThreeWordAddressLocation : Model -> Location -> Bool
 changedThreeWordAddressLocation model newLocation =
     case model.threeWordAddress of
         Received threeWordAddress ->
-            if (threeWordAddress.square.northeast.lat >= newLocation.lat) || (threeWordAddress.square.northeast.lng >= newLocation.lng)
+            if (threeWordAddress.square.northeast.lat >= newLocation.lat) && (newLocation.lat >= threeWordAddress.square.southwest.lat) 
             then
-                True
+                False
             else
-                if (threeWordAddress.square.southwest.lat <= newLocation.lat) || (threeWordAddress.square.southwest.lng <= newLocation.lng)
+                if (threeWordAddress.square.northeast.lng >= newLocation.lng) && (newLocation.lng >= threeWordAddress.square.southwest.lng)
                 then
-                    True
-                else 
                     False
+                else 
+                    True
         Init ->
             True
         NotReceived ->
