@@ -24,6 +24,8 @@ type alias APIKey =
 type alias Flag =
     { apiKey : APIKey
     , supportGeolocation : Bool
+    , supportClipboard : Bool
+    , supportWebShareAPI : Bool
     }
 
 
@@ -57,11 +59,17 @@ type Error
     | UnknownError
     | PortError
 
+type alias WhichIsWebAPIEnabled =
+    { geolocationAPI : Bool
+    , webshareAPI : Bool
+    , clipboardAPI : Bool
+    }
+
 type alias Model =
     { apiKey : APIKey
     , location : Location
     , error : Error
-    , geolocationAPIEnable : Bool
+    , whichIsWebAPIEnabled : WhichIsWebAPIEnabled
     , threeWordAddress : ThreeWordAddress
     }
 
@@ -80,7 +88,7 @@ receivedLocationDecoder =
 
 init : Flag -> ( Model, Cmd Msg )
 init flag =
-    ( Model flag.apiKey { lat = 0, lng = 0 } None flag.supportGeolocation NotReceived
+    ( Model flag.apiKey { lat = 0, lng = 0 } None ( WhichIsWebAPIEnabled flag.supportGeolocation flag.supportWebShareAPI flag.supportClipboard) Init
     , Cmd.none
     )
 
@@ -319,9 +327,19 @@ view model =
                     div []
                     [ div [] [ text ("latitude: " ++ String.fromFloat model.location.lat) ]
                     , div [] [ text ("longitude: " ++ String.fromFloat model.location.lng) ]
-                    , div [ onClick CopyToClipboardThreeWordAddress ] [ text ("3 Word Address: " ++ address.words)]
-                    , div [] [ text "上記 3 Word Addressをクリックするとクリップボードにコピーされます。" ]
-                    , button [ onClick ShareOverWebShareAPI ] [ text "Share" ]
+                    , if model.whichIsWebAPIEnabled.clipboardAPI
+                        then 
+                            div []
+                            [ div [ onClick CopyToClipboardThreeWordAddress ] [ text ("3 Word Address: " ++ address.words)]
+                            , div [] [ text "上記 3 Word Addressをクリックするとクリップボードにコピーされます。" ]
+                            ]
+                        else
+                            div [] [ text ("3 Word Address: " ++ address.words)]                   
+                    , if model.whichIsWebAPIEnabled.webshareAPI
+                        then
+                            div [] [ button [ onClick ShareOverWebShareAPI ] [ text "Share" ] ]
+                        else
+                            div [] []
                     , navbar
                     ]
             
@@ -329,15 +347,21 @@ view model =
                     div []
                     [ div [] [ text ("latitude: " ++ String.fromFloat model.location.lat) ]
                     , div [] [ text ("longitude: " ++ String.fromFloat model.location.lng) ]
-                    , div [ onClick CopyToClipboardThreeWordAddress ] [ text "Please wait..."]
-                    , navbar
+                    , div [] [ text "Please wait..." ]
                     ]
 
                 Init ->
-                    div []
+                    if model.whichIsWebAPIEnabled.geolocationAPI
+                    then
+                        div []
                         [ div [] [ text ("latitude: " ++ String.fromFloat model.location.lat) ]
                         , div [] [ text ("longitude: " ++ String.fromFloat model.location.lng) ]
-                        , div [ onClick CopyToClipboardThreeWordAddress ] [ text "Please wait..."]
+                        , div [] [ text "Please wait..." ]
+                        , navbar
+                        ]
+                    else
+                        div []
+                        [ div [] [ text "このブラウザは位置情報にアクセスできません。"]
                         , navbar
                         ]
                 

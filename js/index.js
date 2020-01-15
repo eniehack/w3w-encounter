@@ -6,7 +6,9 @@ const app = Elm.Main.init({
     node: document.getElementById("elm"),
     flags: {
 		apiKey: process.env.ELM_W3W_API_KEY,
-		supportGeolocation: navigator.geolocation ? true : false,
+		supportGeolocation: typeof(navigator.geolocation) === "object" ? true : false,
+		supportWebShareAPI: typeof(navigator.share) === "object" ? true : false,
+		supportClipboard: typeof(navigator.clipboard) === "object" ? true : false
 	}
 });
 
@@ -19,15 +21,16 @@ app.ports.sendCopyToClipboardRequest.subscribe((threeWordAddress) => {
 })
 
 app.ports.sendShareOverWebShareAPIRequest.subscribe((threeWordAddress) => {
-	let shareData = {
+	navigator.share({
 		title: "w3w-encounter",
 		text: `わたしはいまここにいます: ${threeWordAddress}`,
 		url: `https://w3w.co/${threeWordAddress}`
-	}
-	navigator.share(shareData).then(() => {
+	})
+	.then(() => {
 		console.log("Web Share API success!")
-	}, () => {
-		console.log("Web Share API failed")
+	})
+	.catch((error) => {
+		console.log("Web Share API failed: ", error)
 	})
 })
 
