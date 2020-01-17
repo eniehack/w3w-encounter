@@ -287,7 +287,7 @@ view model =
     case model.error of
         GeolocationAPIPermissionDenied ->
             div [] 
-                [ div [] [ text "位置情報の取得に失敗しました。ブラウザに位置情報を共有するよう設定してみてください。" ]
+                [ div [] [ text "位置情報の取得に失敗しました。ブラウザに位置情報を共有するよう設定してみてください。もしくはスマートフォンのGPSがオフになっていませんか？" ]
                 , navbar
                 ]
 
