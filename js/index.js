@@ -1,5 +1,5 @@
 'use strict';
-
+const bulmaToast = require("bulma-toast");
 const { Elm } = require("../src/Main.elm");
 
 const app = Elm.Main.init({
@@ -14,9 +14,9 @@ const app = Elm.Main.init({
 
 app.ports.sendCopyToClipboardRequest.subscribe((threeWordAddress) => {
 	navigator.clipboard.writeText(threeWordAddress).then(() => {
-		console.log("copyed!")
+		bulmaToast.toast({ message: "copyed!", type: "is-success", position: "bottom-center"});
 	},() => {
-		console.log("copy failed!")
+		bulmaToast.toast({ message: "copy failed!", type: "is-danger", position: "bottom-center"});
 	})
 })
 
