@@ -1,3 +1,4 @@
+-- SPDX-License-Identifier: Apache-2.0 OR AGPL-3.0-only
 port module Main exposing (main)
 
 import Browser exposing (element)

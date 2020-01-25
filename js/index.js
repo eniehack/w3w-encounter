@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0 OR AGPL-3.0-only
 'use strict';
 const bulmaToast = require("bulma-toast");
 const { Elm } = require("../src/Main.elm");

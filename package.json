@@ -4,7 +4,7 @@
   "description": "Support to meet friends, using what3words, and Elm.",
   "main": "index.js",
   "author": "Nakaya",
-  "license": "Apache-2.0",
+  "license": "Apache-2.0 OR AGPL-3.0-only",
   "private": false,
   "dependencies": {
     "bulma-toast": "^1.5.4",
