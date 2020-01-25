@@ -335,7 +335,7 @@ view model =
                             , div [] [ text "上記 3 Word Addressをクリックするとクリップボードにコピーされます。" ]
                             ]
                         else
-                            div [] [ text ("3 Word Address: " ++ address.words)]                   
+                    , a [ href (String.concat ["geo:", String.fromFloat model.location.lat, ",", String.fromFloat model.location.lng, "?z=19"]) ] [ text "地図アプリで開く"]
                     , if model.whichIsWebAPIEnabled.webshareAPI
                         then
                             div [] [ button [ onClick ShareOverWebShareAPI ] [ text "Share" ] ]
