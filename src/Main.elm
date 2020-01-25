@@ -3,7 +3,7 @@ port module Main exposing (main)
 
 import Browser exposing (element)
 import Html exposing (Html, div, text, nav, a, p, button)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode as D
@@ -74,7 +74,6 @@ type alias Model =
     , threeWordAddress : ThreeWordAddress
     }
 
-
 locationDecoder : D.Decoder Location
 locationDecoder =
     D.map2 Location
@@ -99,7 +98,6 @@ type Msg
     | CopyToClipboardThreeWordAddress 
     | ExtractGeolocationData D.Value
     | ShareOverWebShareAPI
-
 
 -- UPDATE
 
@@ -247,8 +245,6 @@ update msg model =
                                         ( { model | error = UnknownError }
                                         , Cmd.none
                                         )
-
-
 
 -- SUBSCRIPTIONS
 
