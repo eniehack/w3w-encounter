@@ -15,9 +15,9 @@ const app = Elm.Main.init({
 
 app.ports.sendCopyToClipboardRequest.subscribe((threeWordAddress) => {
 	navigator.clipboard.writeText(threeWordAddress).then(() => {
-		bulmaToast.toast({ message: "copyed!", type: "is-success", position: "bottom-center"});
+		bulmaToast.toast({ message: "コピーしました！", type: "is-success", position: "top-right"});
 	},() => {
-		bulmaToast.toast({ message: "copy failed!", type: "is-danger", position: "bottom-center"});
+		bulmaToast.toast({ message: "コピーに失敗しました", type: "is-danger", position: "top-right"});
 	})
 })
 
@@ -28,10 +28,10 @@ app.ports.sendShareOverWebShareAPIRequest.subscribe((threeWordAddress) => {
 		url: `https://w3w.co/${threeWordAddress}`
 	})
 	.then(() => {
-		console.log("Web Share API success!")
+		bulmaToast.toast({ message: "位置情報の共有に成功しました！", type: "is-success", position: "top-right"});
 	})
 	.catch((error) => {
-		console.log("Web Share API failed: ", error)
+		cbulmaToast.toast({ message: "位置情報の共有に失敗しました", type: "is-danger", position: "top-right"});
 	})
 })
 
