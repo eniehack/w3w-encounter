@@ -8,16 +8,6 @@ import Html.Events exposing (onClick)
 import Http
 import Json.Decode as D
 
-main : Program Flag Model Msg
-main =
-    Browser.element
-        { init = init
-        , update = update
-        , view = view
-        , subscriptions = subscriptions
-        }
-
-
 type alias APIKey =
     String
 
@@ -248,6 +238,7 @@ update msg model =
 
 -- SUBSCRIPTIONS
 
+
 port receiveLocation : (D.Value -> msg) -> Sub msg
 port sendCopyToClipboardRequest : String -> Cmd msg
 port sendShareOverWebShareAPIRequest : String -> Cmd msg
@@ -369,3 +360,11 @@ view model =
                         , navbar
                         ]
 
+main : Program Flag Model Msg
+main =
+    Browser.element
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        }
