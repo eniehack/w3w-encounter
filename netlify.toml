@@ -1,0 +1,20 @@
+[build]
+publish = "/dist"
+command = "npm run build"
+
+[build.processing]
+skip_processing = false
+
+[build.processing.css]
+minify = true
+bundle = true
+
+[build.processing.html]
+pretty_urls = true
+
+[build.processing.images]
+compress = true
+
+[context.production]
+publish = "/dist"
+command = "npm run build"
