@@ -318,15 +318,15 @@ view model =
                     , if model.whichIsWebAPIEnabled.clipboardAPI
                         then 
                             div []
-                            [ div [ onClick CopyToClipboardThreeWordAddress, class "is-size-4-mobile", class "has-text-weight-bold", class "has-text-justified" ] [ text address.words]
-                            , div [ class "is-size-7" ] [ text "上記 3 Word Addressをクリックするとクリップボードにコピーされます。" ]
+                            [ div [ class "is-size-4-mobile", class "has-text-weight-bold", class "has-text-justified" ] [ text address.words]
+                            , button [ onClick CopyToClipboardThreeWordAddress, class "button", class "is-rounded" ] [ text "copy" ]
                             ]
                         else
                             div [ class "is-size-4-mobile", class "has-text-weight-bold", class "has-text-justified" ] [ text address.words ]
                     , a [ href (String.concat ["geo:", String.fromFloat model.location.lat, ",", String.fromFloat model.location.lng, "?z=19"]) ] [ text "地図アプリで開く"]
                     , if model.whichIsWebAPIEnabled.webshareAPI
                         then
-                            div [] [ button [ onClick ShareOverWebShareAPI ] [ text "Share" ] ]
+                            div [] [ button [ onClick ShareOverWebShareAPI, class "button", class "is-rounded" ] [ text "Share" ] ]
                         else
                             div [] []
                     , navbar
